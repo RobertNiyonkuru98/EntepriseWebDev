@@ -1,0 +1,9 @@
+{
+  "Payment_id": 1,
+  "Amount": 1500,
+  "Currency": "RWF",
+  "Method": "Mobile-Money",
+  "Payment_status": "Paid",
+  "Payment_time": "2026-01-14T10:30:00Z",
+  "trip_id": 1
+}
