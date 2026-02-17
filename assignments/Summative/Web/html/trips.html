@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manual Algorithm Showcase</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo-text">NYC TAXI ANALYTICS</div>
+        <nav class="nav-items">
+            <a href="index.html" class="nav-item">Dashboard</a>
+            <a href="trips.html" class="nav-item active">Trips Explorer</a>
+            <a href="spatial.html" class="nav-item">Spatial Data</a>
+            <a href="algorithm.html" class="nav-item">Manual Algorithm</a>
+        </nav>
+    </header>
+
+    <main class="content">
+    <div class="section-header">
+        <h2 class="section-title">All Trips Explorer</h2>
+        <div class="section-controls">
+            <input type="text" id="tripSearch" class="search-box" placeholder="Search by Borough...">
+            <button id="searchBtn" class="apply-btn" style="width: auto; padding: 0.5rem 1.5rem;">Search</button>
+        </div>
+    </div>
+
+    <div id="tripListContainer">
+        <p class="loading-text">Select a borough to explore trips...</p>
+    </div>
+
+    <div class="pagination">
+        <button class="page-btn" id="prevPage">← Prev</button>
+        <span id="pageNumber">Page 1</span>
+        <button class="page-btn" id="nextPage">Next →</button>
+    </div>
+</main>
+    <script src="../js/app.js"></script>
+</body>
+</html>

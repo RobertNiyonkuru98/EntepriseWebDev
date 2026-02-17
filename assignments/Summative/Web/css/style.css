@@ -1,0 +1,470 @@
+:root {
+    /* Ultimate Spiderman Dark Palette */
+    /* Deep Navy Blue (The Suit Blue) */
+    --primary-bg: #0c1427;
+
+    /* Darker Blue-Grey for Cards */
+    --card-bg: rgba(23, 37, 84, 0.8);
+
+    /* Classic Spidey Red (Vibrant but legible) */
+    --accent-color: #ef4444;
+
+    /* Electric Spidey Blue (Highlight) */
+    --highlight-color: #3b82f6;
+
+    /* Web White/Silver */
+    --primary-text: #f8fafc;
+    --secondary-text: #94a3b8;
+
+    --success-color: #22c55e;
+
+    /* Subtle "Web" Borders */
+    --border-color: rgba(255, 255, 255, 0.15);
+
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+
+    --font-main: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: var(--font-main);
+    background-color: var(--primary-bg);
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(239, 68, 68, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(59, 130, 246, 0.05) 0%, transparent 20%);
+    color: var(--primary-text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Glassmorphism Utilities */
+.glass {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+}
+
+/* Header */
+.header {
+    background: rgba(12, 20, 39, 0.95);
+    border-bottom: 2px solid var(--accent-color); /* Spidey Red Border */
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--shadow-sm);
+    z-index: 100;
+    position: sticky;
+    top: 0;
+    backdrop-filter: blur(10px);
+}
+
+.logo-text {
+    font-weight: 900;
+    font-size: 1.4rem;
+    color: var(--primary-text);
+    letter-spacing: -0.5px;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 0px var(--accent-color); /* Comic Book Style Shadow */
+}
+
+.nav-items { display: flex; gap: 1.5rem; }
+
+.nav-item {
+    text-decoration: none;
+    color: var(--secondary-text);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.nav-item:hover, .nav-item.active {
+    color: var(--primary-text);
+    border-bottom-color: var(--highlight-color); /* Electric Blue Underline */
+    text-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+
+/* Main Layout */
+.main-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 65px);
+}
+
+/* Sidebar */
+.sidebar {
+    background: rgba(12, 20, 39, 0.8);
+    border-right: 1px solid var(--border-color);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--highlight-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--primary-text);
+    transition: all 0.2s;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+}
+
+.filter-input option {
+    background-color: #0c1427;
+    color: white;
+}
+
+.apply-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-md);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.apply-btn:hover {
+    background-color: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+}
+
+.apply-btn:active { transform: translateY(0); }
+
+/* Content Area */
+.content {
+    padding: 2rem;
+    max-width: 1600px;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: var(--card-bg);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+    border-color: var(--highlight-color);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--secondary-text);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--primary-text);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Visualization Card */
+.viz-card {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--primary-text);
+    margin-bottom: 1.5rem;
+    border-left: 5px solid var(--accent-color);
+    padding-left: 1rem;
+}
+
+/* Trips Explorer Specifics */
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.section-controls { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+.search-box {
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    width: 300px;
+    font-size: 0.95rem;
+    box-shadow: var(--shadow-sm);
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+}
+.search-box::placeholder { color: var(--secondary-text); }
+
+#tripListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.trip-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+}
+
+.trip-card:hover {
+    transform: scale(1.005);
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+    border-color: var(--highlight-color);
+    background: rgba(30, 58, 138, 0.4);
+}
+
+.trip-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.trip-id {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--highlight-color);
+    text-transform: uppercase;
+}
+
+.trip-status {
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    background: rgba(34, 197, 94, 0.1);
+    color: var(--success-color);
+    border-radius: 20px;
+    font-weight: 600;
+    border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.trip-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.trip-detail-item { display: flex; flex-direction: column; }
+
+.trip-detail-label {
+    font-size: 0.75rem;
+    color: var(--secondary-text);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+}
+
+.trip-detail-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-text);
+}
+
+.trip-route {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--secondary-text);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    border: 1px solid var(--border-color);
+}
+
+.route-arrow { color: var(--accent-color); font-weight: bold; }
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    padding-bottom: 2rem;
+}
+
+.page-btn {
+    padding: 0.5rem 1.5rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--secondary-text);
+    transition: all 0.2s;
+}
+
+.page-btn:hover:not(:disabled) {
+    background: var(--accent-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+    border-color: var(--accent-color);
+}
+
+.page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#pageNumber { font-weight: 600; color: var(--secondary-text); }
+
+/* Table Styling for Algorithm Page */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 1rem;
+}
+
+th {
+    text-align: left;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--secondary-text);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--primary-text);
+}
+
+tr:last-child td { border-bottom: none; }
+tr:hover td { background-color: rgba(255, 255, 255, 0.05); }
+
+/* Map Container */
+#map {
+    height: 600px;
+    width: 100%;
+    background: #0c1427;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.loading-text {
+    text-align: center;
+    font-style: italic;
+    color: var(--secondary-text);
+    margin-top: 3rem;
+    font-size: 1.1rem;
+}
+
+/* RESPONSIVE MEDIA QUERIES */
+
+/* Tablet & Mobile (Standard Breakpoint 768px) */
+@media screen and (max-width: 768px) {
+    .main-container {
+        grid-template-columns: 1fr; /* Stack sidebar and content */
+    }
+
+    .sidebar {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.5rem;
+    }
+
+    .content {
+        padding: 1rem;
+    }
+
+    .header {
+        padding: 1rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-items {
+        gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .nav-item {
+        font-size: 0.85rem;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .search-box {
+        width: 100%; /* Full width search on mobile */
+    }
+
+    #map {
+        height: 400px; /* Smaller map on mobile */
+    }
+
+    .trip-details {
+        grid-template-columns: 1fr 1fr; /* 2 columns instead of 3 */
+    }
+}
