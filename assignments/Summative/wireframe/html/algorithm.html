@@ -10,11 +10,8 @@
         <div class="logo-text">NYC TAXI ANALYTICS</div>
         <nav class="nav-items">
             <a href="index.html" class="nav-item">Dashboard</a>
-            <a href="trips.html" class="nav-item">Trips Explorer</a>
             <a href="spatial.html" class="nav-item">Spatial Data</a>
-            <a href="analytics.html" class="nav-item">Analytics</a>
             <a href="algorithm.html" class="nav-item active">Manual Algorithm</a>
-            <a href="about.html" class="nav-item">About</a>
         </nav>
     </header>
 
@@ -22,9 +19,9 @@
         <section class="viz-card">
             <h2 class="section-title">Custom Ranking: Top 50 Fares</h2>
             <p>This data is sorted in the backend using a <strong>Manual Bubble Sort</strong> ($O(n^2)$) to satisfy rubric requirements.</p>
-            <button id="loadAlgorithmData" class="apply-btn" style="width: auto; padding: 0.75rem 2rem;">Run Algorithm</button>
+            <button id="loadAlgorithmData" class="apply-btn" style="width: 200px;">Run Algorithm</button>
 
-            <table id="algorithmTable">
+            <table class="table-placeholder" id="algorithmTable" style="margin-top: 20px; width: 100%;">
                 <thead>
                     <tr>
                         <th>Pickup Borough</th>

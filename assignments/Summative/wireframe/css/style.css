@@ -1,0 +1,27 @@
+:root {
+    --wire-bg: #f5f5f5;
+    --wire-card: #ffffff;
+    --wire-border: #cccccc;
+    --wire-accent: #000000;
+}
+
+body { font-family: sans-serif; background: var(--wire-bg); margin: 0; }
+
+.header {
+    display: flex; justify-content: space-between; padding: 20px;
+    background: var(--wire-card); border-bottom: 2px solid var(--wire-border);
+}
+
+.nav-item { text-decoration: none; color: black; padding: 10px; border: 1px solid transparent; }
+.nav-item.active { border: 1px solid black; font-weight: bold; }
+
+.main-container { display: grid; grid-template-columns: 250px 1fr; min-height: 90vh; }
+.sidebar { padding: 20px; background: white; border-right: 2px solid var(--wire-border); }
+
+.stat-card { border: 2px solid var(--wire-border); padding: 20px; background: white; }
+.stat-value { font-size: 2rem; font-weight: bold; }
+
+.filter-input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid var(--wire-border); }
+.apply-btn { width: 100%; padding: 10px; background: black; color: white; cursor: pointer; }
+
+.viz-card { margin: 20px; padding: 20px; background: white; border: 2px solid var(--wire-border); }

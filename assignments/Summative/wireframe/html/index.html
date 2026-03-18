@@ -11,11 +11,8 @@
         <div class="logo-text">NYC TAXI ANALYTICS</div>
         <nav class="nav-items">
             <a href="index.html" class="nav-item active">Dashboard</a>
-            <a href="trips.html" class="nav-item">Trips Explorer</a>
             <a href="spatial.html" class="nav-item">Spatial Data</a>
-            <a href="analytics.html" class="nav-item">Analytics</a>
             <a href="algorithm.html" class="nav-item">Manual Algorithm</a>
-            <a href="about.html" class="nav-item">About</a>
         </nav>
     </header>
 
@@ -38,19 +35,10 @@
         <main class="content">
             <section class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Total Trips Analyzed</div>
-                    <div id="totalTrips" class="stat-value">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Avg. Speed (km/h)</div>
-                    <div id="avgSpeed" class="stat-value">--</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Avg. Fare ($)</div>
-                    <div id="avgFare" class="stat-value">--</div>
+                    <div class="stat-label">Total Trips Loaded</div>
+                    <div id="totalTrips" class="stat-value">0</div>
                 </div>
             </section>
-
             <section class="viz-card">
                 <h2 class="section-title">Trip Volume</h2>
                 <canvas id="tripChart"></canvas>

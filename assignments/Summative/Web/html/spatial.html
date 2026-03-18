@@ -5,7 +5,7 @@
     <title>Spatial Mobility Map</title>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> -->
 </head>
 <body>
     <header class="header">
@@ -14,14 +14,27 @@
             <a href="index.html" class="nav-item">Dashboard</a>
             <a href="trips.html" class="nav-item">Trips Explorer</a>
             <a href="spatial.html" class="nav-item active">Spatial Data</a>
+            <a href="analytics.html" class="nav-item">Analytics</a>
             <a href="algorithm.html" class="nav-item">Manual Algorithm</a>
+            <a href="about.html" class="nav-item">About</a>
         </nav>
     </header>
 
     <main class="content">
-        <div class="viz-card">
-            <h2 class="section-title">NYC Taxi Zones Map</h2>
+        <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">NYC Mobility & Taxi Zone Distribution</h2>
+
+        <div class="viz-card" style="position: relative;">
             <div id="map"></div>
+
+            <div id="map-legend" class="map-legend">
+                <h4 style="margin: 0 0 10px 0; color: var(--primary-text); font-size: 0.9rem;">Borough Legend</h4>
+                <div class="legend-item"><span class="dot" style="background: #ef4444;"></span> Manhattan</div>
+                <div class="legend-item"><span class="dot" style="background: #f59e0b;"></span> Brooklyn</div>
+                <div class="legend-item"><span class="dot" style="background: #10b981;"></span> Queens</div>
+                <div class="legend-item"><span class="dot" style="background: #3b82f6;"></span> Bronx</div>
+                <div class="legend-item"><span class="dot" style="background: #8b5cf6;"></span> Staten Island</div>
+                <div class="legend-item"><span class="dot" style="background: #6b7280;"></span> EWR / Others</div>
+            </div>
         </div>
     </main>
     <script src="../js/app.js"></script>

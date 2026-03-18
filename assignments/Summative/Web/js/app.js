@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://127.0.0.1:5001/api";
+const API_BASE_URL = "http://127.0.0.1:5002/api";
 let tripChart; // Global variable to hold the chart instance
 
 async function updateDashboard() {
@@ -108,11 +108,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const map = L.map('map').setView([40.7128, -74.0060], 11);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
+        const boroughColors = {
+            'Manhattan': '#ef4444',
+            'Brooklyn': '#f59e0b',
+            'Queens': '#10b981',
+            'Bronx': '#3b82f6',
+            'Staten Island': '#8b5cf6',
+            'EWR': '#6b7280'
+        };
+
         fetch('../assets/taxi_zones.json')
             .then(res => res.json())
             .then(geojsonData => {
                 L.geoJSON(geojsonData, {
-                    style: { color: "black", weight: 1, fillOpacity: 0.1 }
+                    style: (feature) => ({
+                        fillColor: boroughColors[feature.properties.borough] || '#6b7280',
+                        color: "white",
+                        weight: 0.5,
+                        fillOpacity: 0.5
+                    }),
+                    onEachFeature: (feature, layer) => {
+                        layer.bindPopup(`
+                            <div style="color: #0c1427; font-family: sans-serif;">
+                                <strong>Zone:</strong> ${feature.properties.zone}<br>
+                                <strong>Borough:</strong> ${feature.properties.borough}
+                            </div>
+                        `);
+                        layer.on('mouseover', function() { this.setStyle({ fillOpacity: 0.8 }); });
+                        layer.on('mouseout', function() { this.setStyle({ fillOpacity: 0.5 }); });
+                    }
                 }).addTo(map);
             });
     }
@@ -144,9 +168,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 tripContainer.innerHTML = trips.map(trip => `
-                    <div class="trip-card">
+                    <div class="trip-card ${trip.is_overpaying ? 'overpaying' : ''}" onclick="this.classList.toggle('expanded')">
                         <div class="trip-header">
-                            <div class="trip-id">Borough: ${trip.pickup_borough || 'Unknown'}</div>
+                            <div class="trip-id">Borough: ${trip.pickup_borough || 'Unknown'}
+                                ${trip.is_overpaying ? '<span class="overpaying-badge">⚠️ Overpaying</span>' : ''}
+                            </div>
                             <div class="trip-status">${trip.payment_type === 1 ? 'Credit Card' : 'Cash'}</div>
                         </div>
                         <div class="trip-details">
@@ -159,14 +185,28 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <span class="trip-detail-value">$${trip.fare_amount}</span>
                             </div>
                             <div class="trip-detail-item">
-                                <span class="trip-detail-label">Speed</span>
-                                <span class="trip-detail-value">${(trip.avg_speed_kmh || 0).toFixed(1)} km/h</span>
+                                <span class="trip-detail-label">Fare/Mile</span>
+                                <span class="trip-detail-value">$${(trip.fare_per_mile || 0).toFixed(2)}</span>
                             </div>
                         </div>
-                        <div class="trip-route">
-                            <strong>From:</strong> ${trip.pickup_zone || 'N/A'}
-                            <span class="route-arrow"> → </span>
-                            <strong>To:</strong> ${trip.dropoff_zone || 'N/A'}
+
+                        <div class="expand-hint">Click to see route details ↓</div>
+
+                        <div class="trip-details-expandable">
+                            <div class="trip-route">
+                                <div style="margin-bottom: 8px;">
+                                    <strong>Pickup Time:</strong> ${trip.tpep_pickup_datetime}
+                                </div>
+                                <div style="margin-bottom: 8px;">
+                                    <strong>Dropoff Time:</strong> ${trip.tpep_dropoff_datetime}
+                                </div>
+                                <div style="margin-bottom: 8px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                                    <strong>From:</strong> ${trip.pickup_zone || 'N/A'}
+                                </div>
+                                <div>
+                                    <strong>To:</strong> ${trip.dropoff_zone || 'N/A'}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `).join('');
@@ -206,4 +246,80 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initial Load
         fetchTrips(0);
     }
+
+    // Logic for Fare Analytics
+    if (document.getElementById('fareChart')) {
+        loadFareAnalytics();
+    }
 });
+
+async function loadFareAnalytics() {
+    const boroughFilter = document.getElementById('boroughFilter');
+    const borough = boroughFilter ? boroughFilter.value : '';
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/trips?borough=${borough}&limit=200`);
+        const trips = await response.json();
+
+        if (trips.length === 0) return;
+
+        const fares = trips.map(t => t.fare_per_mile).filter(v => v > 0);
+        const avg = fares.length ? fares.reduce((a, b) => a + b, 0) / fares.length : 0;
+        const stdDev = fares.length > 1
+            ? Math.sqrt(fares.map(v => (v - avg) ** 2).reduce((a, b) => a + b, 0) / fares.length)
+            : 0;
+        const outliers = trips.filter(t => t.is_overpaying).length;
+
+        // Update Summary Cards if they exist
+        if (document.getElementById('avgFareAnalytics')) {
+            document.getElementById('avgFareAnalytics').innerText = `$${avg.toFixed(2)}`;
+            document.getElementById('stdDevFare').innerText = `$${stdDev.toFixed(2)}`;
+            document.getElementById('outlierCount').innerText = outliers;
+        }
+
+        renderAnalyticsCharts({
+            avg,
+            stdDev,
+            outliers,
+            normal: trips.length - outliers
+        });
+
+    } catch (e) {
+        console.error("Analytics Error:", e);
+    }
+}
+
+function renderAnalyticsCharts(stats) {
+    const fareCtx = document.getElementById('fareChart').getContext('2d');
+    const outlierCtx = document.getElementById('outlierPieChart').getContext('2d');
+
+    new Chart(fareCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Avg Fare/Mile', 'Std Dev'],
+            datasets: [{
+                label: 'Fare Statistics ($)',
+                data: [stats.avg, stats.stdDev],
+                backgroundColor: ['#3b82f6', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    new Chart(outlierCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Normal Trips', 'Outliers'],
+            datasets: [{
+                data: [stats.normal, stats.outliers],
+                backgroundColor: ['#22c55e', '#ef4444'],
+                borderWidth: 0
+            }]
+        },
+        options: { responsive: true }
+    });
+}

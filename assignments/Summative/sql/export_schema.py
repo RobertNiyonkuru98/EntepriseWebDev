@@ -4,7 +4,10 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv("../server/.env")
+# Load environment variables
+script_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(script_dir, "../server/.env")
+load_dotenv(env_path)
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if not DATABASE_URL:
@@ -13,61 +16,53 @@ if not DATABASE_URL:
 try:
     engine = create_engine(DATABASE_URL)
 
-    print("Fetching table structure for 'trips' from information_schema...")
-
-    # Query to get column names and data types directly from Postgres
-    query = """
-    SELECT column_name, data_type
-    FROM information_schema.columns
-    WHERE table_name = 'trips'
-    ORDER BY ordinal_position;
-    """
-
-    columns_df = pd.read_sql(query, engine)
-
-    # Construct CREATE TABLE statement manually
-    create_table_stmt = "CREATE TABLE trips (\n"
-    column_defs = []
-
-    for _, row in columns_df.iterrows():
-        col_name = f'"{row["column_name"]}"' # Quote identifiers to be safe
-        col_type = row['data_type']
-        # formatting cleanup if needed (e.g. 'double precision' is fine)
-        column_defs.append(f"    {col_name} {col_type}")
-
-    create_table_stmt += ",\n".join(column_defs)
-    create_table_stmt += "\n);"
-
-    table_schema = create_table_stmt
-
-    # Define Indexes (Hardcoded as they were created manually in build_db.py)
-    indexes = [
-        "CREATE INDEX idx_pickup_borough ON trips (pickup_borough);",
-        "CREATE INDEX idx_pickup_hour ON trips (pickup_hour);",
-        "CREATE INDEX idx_fare ON trips (fare_amount);"
-    ]
-
     output_dir = 'database'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
     output_file = f'{output_dir}/schema.sql'
 
+    tables_to_export = ['taxi_zones', 'trips', 'trips_normalized']
+
     with open(output_file, 'w') as f:
-        f.write("-- Schema Export for 'trips' table\n")
+        f.write("-- Schema Export for Taxi Data Project\n")
         f.write("-- Generated from PostgreSQL\n\n")
 
-        # Write Table Schema
-        f.write(table_schema)
-        # Ensure it ends with a semicolon if pandas didn't add one (it usually doesn't for the full statement block logic sometimes)
-        if not table_schema.strip().endswith(';'):
-            f.write(";")
-        f.write("\n\n")
+        for table_name in tables_to_export:
+            print(f"Fetching schema for '{table_name}'...")
 
-        # Write Indexes
-        f.write("-- Indexes\n")
-        for idx in indexes:
-            f.write(f"{idx}\n")
+            # Query columns
+            query = f"""
+            SELECT column_name, data_type, is_nullable
+            FROM information_schema.columns
+            WHERE table_name = '{table_name}'
+            ORDER BY ordinal_position;
+            """
+            columns_df = pd.read_sql(query, engine)
+
+            f.write(f"CREATE TABLE {table_name} (\n")
+            column_defs = []
+            for _, row in columns_df.iterrows():
+                col_name = f'"{row["column_name"]}"'
+                col_type = row['data_type']
+                nullable = "NULL" if row['is_nullable'] == 'YES' else "NOT NULL"
+                column_defs.append(f"    {col_name} {col_type} {nullable}")
+
+            # Basic PK/FK handling would be complex to query manually here without pg_dump,
+            # but usually for the assignment, listing columns + types is the critical part.
+            # We will manually append the known constraints for documentation if needed,
+            # or rely on the Fact that build_db.py creates them.
+
+            f.write(",\n".join(column_defs))
+            f.write("\n);\n\n")
+
+        # Write Known Indexes/Constraints manually for completeness
+        f.write("-- Indexes & Constraints\n")
+        f.write("ALTER TABLE taxi_zones ADD PRIMARY KEY (\"LocationID\");\n")
+        f.write("ALTER TABLE trips_normalized ADD FOREIGN KEY (\"PULocationID\") REFERENCES taxi_zones(\"LocationID\");\n")
+        f.write("ALTER TABLE trips_normalized ADD FOREIGN KEY (\"DOLocationID\") REFERENCES taxi_zones(\"LocationID\");\n")
+        f.write("CREATE INDEX idx_pickup_borough ON trips (pickup_borough);\n")
+        f.write("CREATE INDEX idx_pickup_hour ON trips (pickup_hour);\n")
+        f.write("CREATE INDEX idx_fare ON trips (fare_amount);\n")
 
     print(f"Schema successfully exported to {output_file}")
 

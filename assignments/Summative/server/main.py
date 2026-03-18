@@ -38,10 +38,41 @@ def get_trips():
     params.append(offset)
 
     cur.execute(query, params)
-    trips = cur.fetchall()
+    trips = [dict(row) for row in cur.fetchall()]
     conn.close()
 
-    return jsonify([dict(row) for row in trips])
+    # Calculate metrics for "Overpaying" logic
+    # We do this on the fetched slice if we want it to be relative to the view,
+    # or ideally relative to the whole borough, but for simplicity let's follow the reference pattern.
+    fares_per_mile = []
+    for trip in trips:
+        # Note: 'fare_per_mile' might already be in DB if build_db calculated it
+        # If not, calculate it on the fly.
+        dist = trip.get('trip_distance', 0)
+        fare = trip.get('fare_amount', 0)
+
+        # Consistent with reference logic
+        if dist and dist > 0:
+            fpm = fare / dist
+            trip['fare_per_mile'] = round(fpm, 2)
+            fares_per_mile.append(fpm)
+        else:
+            trip['fare_per_mile'] = 0
+
+    if fares_per_mile:
+        mean = sum(fares_per_mile) / len(fares_per_mile)
+        variance = sum((x - mean) ** 2 for x in fares_per_mile) / len(fares_per_mile)
+        std_dev = variance ** 0.5
+
+        # Flag trips
+        for trip in trips:
+            fpm = trip.get('fare_per_mile', 0)
+            trip['is_overpaying'] = fpm > (mean + 2 * std_dev)
+    else:
+        for trip in trips:
+            trip['is_overpaying'] = False
+
+    return jsonify(trips)
 
 @app.route('/api/top_fares', methods=['GET'])
 def get_top_fare():
@@ -63,7 +94,6 @@ def get_top_fare():
 
     # Return the top 50
     return jsonify(sorted_trips[:50])
-# PLACEHOLDER FOR VUX
 
 def manual_sort_by_fare(trip_list):
     # Manual sort of list of dict by fare_amount in desc order.
@@ -80,4 +110,4 @@ def manual_sort_by_fare(trip_list):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5002)
